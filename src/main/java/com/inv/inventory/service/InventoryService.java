@@ -3,6 +3,7 @@ package com.inv.inventory.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
@@ -37,4 +38,8 @@ public interface InventoryService {
 	public String updateSite(UpdateSiteRequest request);
 	
 	public String receiveTools(ReceiveToolsRequest request);
+	
+	//login service
+	
+	public String login (Login login);
 }

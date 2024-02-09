@@ -11,10 +11,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.SentToolDetails;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
+import com.inv.inventory.repository.LoginRepository;
 import com.inv.inventory.repository.SiteHistoryRepository;
 import com.inv.inventory.repository.SiteRepository;
 import com.inv.inventory.repository.ToolRepository;
@@ -32,6 +34,9 @@ public class InventoryServiceImpl implements InventoryService{
 	private final ToolRepository toolRepository;
 	private final SiteRepository siteRepository;
 	private final SiteHistoryRepository siteHistoryRepository;
+	
+	@Autowired
+	private LoginRepository loginRepository;
 	
 	@Autowired
     private MongoTemplate mongoTemplate;
@@ -394,5 +399,19 @@ public class InventoryServiceImpl implements InventoryService{
 		mongoTemplate.updateFirst(query3, update3, Tool.class);
 		
 		return "Tool quantity updated";
+	}
+
+	@Override
+	public String login(Login login) {
+		Optional<Login> logindetails = loginRepository.findById(0);
+		if(!login.getUsername().equalsIgnoreCase(logindetails.get().getUsername())) {
+			return "Invalid Username";
+		}
+		else if(!login.getPassword().equals(logindetails.get().getPassword())) {
+			return "Invalid Password";
+		}
+		else {
+			return "Success";
+		}
 	}
 }

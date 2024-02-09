@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
@@ -116,6 +117,11 @@ public class InventoryController {
 	@PutMapping("/updateToolList")
 	public String updateToolList(@RequestBody Tool tool) {
 		return inventoryService.updateToolQuantity(tool);
+	}
+	
+	@PostMapping("/login")
+	public String login (@RequestBody Login login) {
+		return inventoryService.login(login);
 	}
 	
 }
