@@ -73,8 +73,8 @@ public class InventoryController {
 	
 	@DeleteMapping("/deleteTool/{id}")
 	public String deleteTool(@PathVariable int id) {
-		inventoryService.deleteTool(id);
-		return "Tool deleted";
+		
+		return inventoryService.deleteTool(id);
 	}
 	
 	@PostMapping("/moveToHistory")

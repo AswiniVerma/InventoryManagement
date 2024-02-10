@@ -234,8 +234,26 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String deleteTool(int id) {
+		Optional<Tool> tool = toolRepository.findById(id);
+		List<Site> siteList = siteRepository.findAll();
+		List<String> siteToolNameList = new ArrayList<>();
+		List<SentToolDetails> siteToolList = new ArrayList<>();
+		for(int i =0; i<siteList.size(); i++) {
+			for(SentToolDetails x : siteList.get(i).getToolDetails()) {
+			siteToolList.add(x);
+			}
+		}
+		for(SentToolDetails x : siteToolList) {
+			siteToolNameList.add(x.getToolName());
+		}
+		
+		if(siteToolNameList.contains(tool.get().getName())) {
+			return "tool is being used in site cannot delete";
+		}
+		else {
 		toolRepository.deleteById(id);
 		return "tool deleted";
+		}
 	}
 
 	@Override
