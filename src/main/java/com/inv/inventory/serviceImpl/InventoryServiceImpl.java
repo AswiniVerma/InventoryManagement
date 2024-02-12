@@ -12,11 +12,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.inv.inventory.entity.Login;
+import com.inv.inventory.entity.LostTool;
 import com.inv.inventory.entity.SentToolDetails;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
 import com.inv.inventory.repository.LoginRepository;
+import com.inv.inventory.repository.LostToolRepository;
 import com.inv.inventory.repository.SiteHistoryRepository;
 import com.inv.inventory.repository.SiteRepository;
 import com.inv.inventory.repository.ToolRepository;
@@ -37,6 +39,9 @@ public class InventoryServiceImpl implements InventoryService{
 	
 	@Autowired
 	private LoginRepository loginRepository;
+	
+	@Autowired
+	private LostToolRepository losttoolrepository;
 	
 	@Autowired
     private MongoTemplate mongoTemplate;
@@ -432,4 +437,44 @@ public class InventoryServiceImpl implements InventoryService{
 			return "Success";
 		}
 	}
+
+	@Override
+	public String addLostTool(LostTool tool) {
+		
+		Site site = siteRepository.findByName(tool.getSiteName());
+		List<SentToolDetails> siteToolList = site.getToolDetails();
+		for(int i =0; i<siteToolList.size(); i++) {
+			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
+				siteToolList.get(i).setToolQuantity("0");
+			}
+		}
+		Query query3 = new Query(Criteria.where("name").is(tool.getSiteName()));
+		Update update3 = new Update().set("toolDetails",siteToolList);
+		mongoTemplate.updateFirst(query3, update3, Site.class);
+		
+		
+		
+		List<LostTool> toolList = losttoolrepository.findAll();
+		if(toolList.size()==0) {
+			tool.setId(0);
+		}
+		else {
+			int toolListSize = toolList.size();
+			LostTool lastElement = toolList.get(toolListSize-1);
+			tool.setId(lastElement.getId()+1);
+		}
+		tool.setName(tool.getName().toLowerCase());
+		losttoolrepository.save(tool);
+		return "Lost tool saved in list";
+	}
+
+	@Override
+	public List<LostTool> getAllLostTool() {
+		
+		return losttoolrepository.findAll();
+	}
+
+	
+
+	
 }

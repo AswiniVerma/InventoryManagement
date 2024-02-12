@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inv.inventory.entity.Login;
+import com.inv.inventory.entity.LostTool;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
@@ -124,4 +125,13 @@ public class InventoryController {
 		return inventoryService.login(login);
 	}
 	
+	@PostMapping("/lostTool")
+	public String addLostTool(@RequestBody LostTool tool) {
+		return inventoryService.addLostTool(tool);
+	}
+	
+	@GetMapping("/getAllLostTool")
+	public List<LostTool> getAllLostTool(){
+		return inventoryService.getAllLostTool();
+	}
 }
