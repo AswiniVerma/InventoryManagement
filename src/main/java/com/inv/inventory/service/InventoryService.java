@@ -3,8 +3,10 @@ package com.inv.inventory.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.inv.inventory.entity.DamagedTool;
 import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.LostTool;
+import com.inv.inventory.entity.PermanentDamagedTool;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
@@ -22,6 +24,10 @@ public interface InventoryService {
 	public String deleteTool(int id);
 	public String addLostTool(LostTool tool);
 	public List<LostTool> getAllLostTool();
+	public String addDamagedTool(DamagedTool tool);
+	public List<DamagedTool> getAllDamagedTool();
+	public String addPermanentDamagedTool(PermanentDamagedTool tool);
+	public List<PermanentDamagedTool> getAllPermanentDamagedTool();
 	
 	
 	//Site

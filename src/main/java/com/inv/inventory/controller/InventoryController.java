@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inv.inventory.entity.DamagedTool;
 import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.LostTool;
+import com.inv.inventory.entity.PermanentDamagedTool;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
@@ -134,4 +136,25 @@ public class InventoryController {
 	public List<LostTool> getAllLostTool(){
 		return inventoryService.getAllLostTool();
 	}
+	
+	@PostMapping("/damagedTool")
+	public String addDamagedTool(@RequestBody DamagedTool tool) {
+		return inventoryService.addDamagedTool(tool);
+	}
+	
+	@GetMapping("/getAllDamagedTool")
+	public List<DamagedTool> getAllDamagedTool(){
+		return inventoryService.getAllDamagedTool();
+	}
+	
+	@PostMapping("/permanentDamagedTool")
+	public String addPermanentDamagedTool(@RequestBody PermanentDamagedTool tool) {
+		return inventoryService.addPermanentDamagedTool(tool);
+	}
+	
+	@GetMapping("/getAllPermanentDamagedTool")
+	public List<PermanentDamagedTool> getAllPermanentDamagedTool(){
+		return inventoryService.getAllPermanentDamagedTool();
+	}
+	
 }

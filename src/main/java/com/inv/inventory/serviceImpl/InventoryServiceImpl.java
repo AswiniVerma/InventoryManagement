@@ -11,14 +11,18 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.inv.inventory.entity.DamagedTool;
 import com.inv.inventory.entity.Login;
 import com.inv.inventory.entity.LostTool;
+import com.inv.inventory.entity.PermanentDamagedTool;
 import com.inv.inventory.entity.SentToolDetails;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
+import com.inv.inventory.repository.DamagedToolRepository;
 import com.inv.inventory.repository.LoginRepository;
 import com.inv.inventory.repository.LostToolRepository;
+import com.inv.inventory.repository.PermanentDamagedToolRepository;
 import com.inv.inventory.repository.SiteHistoryRepository;
 import com.inv.inventory.repository.SiteRepository;
 import com.inv.inventory.repository.ToolRepository;
@@ -42,6 +46,10 @@ public class InventoryServiceImpl implements InventoryService{
 	
 	@Autowired
 	private LostToolRepository losttoolrepository;
+	@Autowired
+	private DamagedToolRepository damagedToolRepository;
+	@Autowired
+	private PermanentDamagedToolRepository permanentDamagedToolRepository;
 	
 	@Autowired
     private MongoTemplate mongoTemplate;
@@ -319,10 +327,20 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String moveToHistory(SiteHistory site) {
+		List<SiteHistory> siteList = getHistoryList();
+		if(siteList.size()==0) {
+			site.setId(0);
+		}
+		else {
+			int siteListSize = siteList.size();
+			SiteHistory lastElement = siteList.get(siteListSize-1);
+			site.setId(lastElement.getId()+1);
+		}
 		siteHistoryRepository.save(site);
 		return site.getName()+"Moved to History";
 	}
 
+	
 	@Override
 	public List<SiteHistory> getHistoryList() {
 		return siteHistoryRepository.findAll();
@@ -445,7 +463,10 @@ public class InventoryServiceImpl implements InventoryService{
 		List<SentToolDetails> siteToolList = site.getToolDetails();
 		for(int i =0; i<siteToolList.size(); i++) {
 			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
-				siteToolList.get(i).setToolQuantity("0");
+				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
+				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
+				siteToolList.get(i).setToolQuantity(newQuantity);
 			}
 		}
 		Query query3 = new Query(Criteria.where("name").is(tool.getSiteName()));
@@ -472,6 +493,84 @@ public class InventoryServiceImpl implements InventoryService{
 	public List<LostTool> getAllLostTool() {
 		
 		return losttoolrepository.findAll();
+	}
+
+	@Override
+	public String addDamagedTool(DamagedTool tool) {
+		Site site = siteRepository.findByName(tool.getSiteName());
+		List<SentToolDetails> siteToolList = site.getToolDetails();
+		for(int i =0; i<siteToolList.size(); i++) {
+			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
+				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
+				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
+				siteToolList.get(i).setToolQuantity(newQuantity);
+			}
+		}
+		Query query3 = new Query(Criteria.where("name").is(tool.getSiteName()));
+		Update update3 = new Update().set("toolDetails",siteToolList);
+		mongoTemplate.updateFirst(query3, update3, Site.class);
+		
+		
+		
+		List<DamagedTool> toolList = damagedToolRepository.findAll();
+		if(toolList.size()==0) {
+			tool.setId(0);
+		}
+		else {
+			int toolListSize = toolList.size();
+			DamagedTool lastElement = toolList.get(toolListSize-1);
+			tool.setId(lastElement.getId()+1);
+		}
+		tool.setName(tool.getName().toLowerCase());
+		damagedToolRepository.save(tool);
+		return "Damaged Tool saved in list";
+
+	}
+
+	@Override
+	public List<DamagedTool> getAllDamagedTool() {
+		
+		return damagedToolRepository.findAll();
+	}
+
+	@Override
+	public String addPermanentDamagedTool(PermanentDamagedTool tool) {
+		Site site = siteRepository.findByName(tool.getSiteName());
+		List<SentToolDetails> siteToolList = site.getToolDetails();
+		for(int i =0; i<siteToolList.size(); i++) {
+			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
+				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
+				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
+				siteToolList.get(i).setToolQuantity(newQuantity);
+			}
+		}
+		Query query3 = new Query(Criteria.where("name").is(tool.getSiteName()));
+		Update update3 = new Update().set("toolDetails",siteToolList);
+		mongoTemplate.updateFirst(query3, update3, Site.class);
+		
+		
+		
+		List<PermanentDamagedTool> toolList = permanentDamagedToolRepository.findAll();
+		if(toolList.size()==0) {
+			tool.setId(0);
+		}
+		else {
+			int toolListSize = toolList.size();
+			PermanentDamagedTool lastElement = toolList.get(toolListSize-1);
+			tool.setId(lastElement.getId()+1);
+		}
+		tool.setName(tool.getName().toLowerCase());
+		permanentDamagedToolRepository.save(tool);
+		return " Permanent Damaged Tool saved in list";
+
+	}
+
+	@Override
+	public List<PermanentDamagedTool> getAllPermanentDamagedTool() {
+		
+		return permanentDamagedToolRepository.findAll();
 	}
 
 	
