@@ -467,6 +467,7 @@ public class InventoryServiceImpl implements InventoryService{
 			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
 				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
 				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				if(givenQuantity>oldQuantity || givenQuantity<0)return "Invalid number of tools";
 				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
 				siteToolList.get(i).setToolQuantity(newQuantity);
 			}
@@ -505,6 +506,7 @@ public class InventoryServiceImpl implements InventoryService{
 			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
 				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
 				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				if(givenQuantity>oldQuantity || givenQuantity<0)return "Invalid number of tools";
 				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
 				siteToolList.get(i).setToolQuantity(newQuantity);
 			}
@@ -544,6 +546,7 @@ public class InventoryServiceImpl implements InventoryService{
 			if(tool.getName().equals(siteToolList.get(i).getToolName())) {
 				int oldQuantity = Integer.parseInt(siteToolList.get(i).getToolQuantity());
 				int givenQuantity = Integer.parseInt(tool.getQuantity());
+				if(givenQuantity>oldQuantity || givenQuantity<0)return "Invalid number of tools";
 				String newQuantity = Integer.toString(oldQuantity-givenQuantity);
 				siteToolList.get(i).setToolQuantity(newQuantity);
 			}
