@@ -65,6 +65,8 @@ public class InventoryServiceImpl implements InventoryService{
     }
     
 	public String addTool(Tool tool) {
+		boolean isNumericTool = tool.getOriginalquantity().matches("\\d+");
+		if(!isNumericTool)return "Please enter the numeric value of tool";
 		
 		List<Tool> toolList = getAllTools();
 		Tool oldTool = toolRepository.findByName(tool.getName());
@@ -112,6 +114,7 @@ public class InventoryServiceImpl implements InventoryService{
 			String lowerCaseName = x.getToolName().toLowerCase();
 			SentToolDetails obj = new SentToolDetails();
 			obj.setToolName(lowerCaseName);
+			if(!x.getToolQuantity().matches("\\d+")) return "Please enter numeric values for tool quantity";
 			obj.setToolQuantity(x.getToolQuantity());
 			siteToolDetails.add(obj);
 		}
@@ -174,6 +177,7 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String addExtraTool(AddExtraTool extraTool) {
+		if(!extraTool.getToolQuantity().matches("\\d+")) return "Please enter numeric value for tool quantity";
 		Tool tool = toolRepository.findByName(extraTool.getToolName());
 		if(Integer.parseInt(tool.getCurquantity())<Integer.parseInt(extraTool.getToolQuantity()))
 		{
@@ -226,6 +230,7 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String removeTool(RemoveTool removeToolRequest) {
+
 		Site site = siteRepository.findByName(removeToolRequest.getSiteName());
 		String toolName = removeToolRequest.getToolName().toLowerCase();
 		removeToolRequest.setToolName(toolName);
@@ -273,6 +278,7 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String decreaseNumberOfTool(AddExtraTool extraTool) {
+		if(!extraTool.getToolQuantity().matches("\\d+")) return "Please enter numeric value for tool quantity";
 		Tool tool = toolRepository.findByName(extraTool.getToolName());
 		if(Integer.parseInt(tool.getCurquantity())- Integer.parseInt(extraTool.getToolQuantity()) < 0)
 		{
@@ -387,9 +393,14 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String receiveTools(ReceiveToolsRequest request) {
+		
 		Optional<Site> site = siteRepository.findById(request.getId());
 		List<SentToolDetails> oldList = site.get().getToolDetails();
 		List<SentToolDetails> newList = request.getToolDetails();
+		
+		for(SentToolDetails x : newList) {
+			if(!x.getToolQuantity().matches("\\d+")) return "Please enter numeric value in tool quantity";
+		}
 		
 		for(int i =0; i<oldList.size(); i++) {
 			for(int j =0; j<newList.size(); j++) {
@@ -428,6 +439,9 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String updateToolQuantity(Tool newToolQuantity) {
+		if(!newToolQuantity.getOriginalquantity().matches("\\d+") || !newToolQuantity.getCurquantity().matches("\\d+")) {
+			return "Please enter numeric values in quantity";
+		}
 		Tool tool = toolRepository.findByName(newToolQuantity.getName());
 		Query query = new Query(Criteria.where("name").is(tool.getName()));
 		Update update = new Update().set("originalquantity", newToolQuantity.getOriginalquantity());
@@ -460,7 +474,8 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String addLostTool(LostTool tool) {
-		
+		boolean isNumericTool = tool.getQuantity().matches("\\d+");
+		if(!isNumericTool)return "Please enter the numeric value of lost tool";
 		Site site = siteRepository.findByName(tool.getSiteName());
 		List<SentToolDetails> siteToolList = site.getToolDetails();
 		for(int i =0; i<siteToolList.size(); i++) {
@@ -500,6 +515,8 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String addDamagedTool(DamagedTool tool) {
+		boolean isNumericTool = tool.getQuantity().matches("\\d+");
+		if(!isNumericTool)return "Please enter the numeric value of lost tool";
 		Site site = siteRepository.findByName(tool.getSiteName());
 		List<SentToolDetails> siteToolList = site.getToolDetails();
 		for(int i =0; i<siteToolList.size(); i++) {
@@ -540,6 +557,8 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public String addPermanentDamagedTool(PermanentDamagedTool tool) {
+		boolean isNumericTool = tool.getQuantity().matches("\\d+");
+		if(!isNumericTool)return "Please enter the numeric value of lost tool";
 		Site site = siteRepository.findByName(tool.getSiteName());
 		List<SentToolDetails> siteToolList = site.getToolDetails();
 		for(int i =0; i<siteToolList.size(); i++) {

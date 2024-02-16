@@ -37,8 +37,8 @@ public class InventoryController {
 	
 	@PostMapping("/addTool")
 	public String addTool(@RequestBody Tool tool) {
-		inventoryService.addTool(tool);
-		return "Tool added";
+		return inventoryService.addTool(tool);
+		
 	}
 	
 	@GetMapping("/allTools")
