@@ -30,7 +30,9 @@ import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
 import com.inv.inventory.requests.SendToolsRequest;
+import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
+import com.inv.inventory.response.ToolDetailsResponse;
 import com.inv.inventory.service.InventoryService;
 import com.inv.inventory.validator.RequestValidator;
 
@@ -571,6 +573,138 @@ public class InventoryServiceImpl implements InventoryService{
 	public List<PermanentDamagedTool> getAllPermanentDamagedTool() {
 		
 		return permanentDamagedToolRepository.findAll();
+	}
+
+	@Override
+	public ToolDetailsResponse toolDetails(String toolName) {
+		Tool tool = toolRepository.findByName(toolName);
+		List<Site> sites = getAllSites();
+		List<LostTool> losttools = getAllLostTool();
+		List<DamagedTool> damagedTools = getAllDamagedTool();
+		List<PermanentDamagedTool> permanentDamagedTools = getAllPermanentDamagedTool();
+		
+		ToolDetailsResponse response = new ToolDetailsResponse();
+		response.setName(toolName);
+		response.setOriginalQuantity(tool.getOriginalquantity());
+		response.setCurQuantity(tool.getCurquantity());
+		
+		int siteToolCount = 0;
+		int lostToolCount = 0;
+		int damagedToolCount = 0;
+		int permanentDamagedToolCount = 0;
+		
+		for(Site x : sites) {
+			for(SentToolDetails y : x.getToolDetails()) {
+				if(y.getToolName().equalsIgnoreCase(toolName)) {
+					int toolCount = Integer.parseInt(y.getToolQuantity());
+					siteToolCount = siteToolCount + toolCount;
+				}
+			}
+		}
+		response.setSitetoolCount(Integer.toString(siteToolCount));
+		
+		for( LostTool x : losttools) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				int toolCount = Integer.parseInt(x.getQuantity());
+				lostToolCount = lostToolCount + toolCount;
+			}
+		}
+		response.setLost(Integer.toString(lostToolCount));
+		
+		for( DamagedTool x : damagedTools) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				int toolCount = Integer.parseInt(x.getQuantity());
+				damagedToolCount = damagedToolCount + toolCount;
+			}
+		}
+		response.setDamaged(Integer.toString(damagedToolCount));
+		
+		for( PermanentDamagedTool x : permanentDamagedTools) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				int toolCount = Integer.parseInt(x.getQuantity());
+				permanentDamagedToolCount = permanentDamagedToolCount + toolCount;
+			}
+		}
+		response.setUnrepair(Integer.toString(permanentDamagedToolCount));
+		return response;
+	}
+
+	@Override
+	public String lostToolFound(ToolFound req) {
+		int numberofToolsFound = Integer.parseInt(req.getQuantity());
+		
+		Tool tool = toolRepository.findByName(req.getName());
+		
+		Optional<LostTool> lostTool = losttoolrepository.findById(req.getId());
+		int originalNumberOfLostTool = Integer.parseInt(lostTool.get().getQuantity());
+		
+		if(numberofToolsFound>originalNumberOfLostTool || numberofToolsFound<0) {
+			return "Invalid number of tools entered";
+		}
+		
+		String newLostToolQuantity = Integer.toString(originalNumberOfLostTool-numberofToolsFound);
+		
+		Query query3 = new Query(Criteria.where("id").is(req.getId()));
+		Update update3 = new Update().set("quantity",newLostToolQuantity);
+		mongoTemplate.updateFirst(query3, update3, LostTool.class);
+		
+		int curToolQuantity = Integer.parseInt(tool.getCurquantity());
+		String newCurToolQuantity = Integer.toString(curToolQuantity+numberofToolsFound);
+		
+		Query query = new Query(Criteria.where("name").is(req.getName()));
+		Update update = new Update().set("curquantity",newCurToolQuantity);
+		mongoTemplate.updateFirst(query, update, Tool.class);
+		
+		return req.getName()+"value updated";
+		
+	}
+
+	@Override
+	public String damagedToolRepaired(ToolFound req) {
+		int numberofToolsFound = Integer.parseInt(req.getQuantity());
+		
+		Tool tool = toolRepository.findByName(req.getName());
+		
+		Optional<DamagedTool> lostTool = damagedToolRepository.findById(req.getId());
+		int originalNumberOfLostTool = Integer.parseInt(lostTool.get().getQuantity());
+		
+		if(numberofToolsFound>originalNumberOfLostTool || numberofToolsFound<0) {
+			return "Invalid number of tools entered";
+		}
+		String newLostToolQuantity = Integer.toString(originalNumberOfLostTool-numberofToolsFound);
+		
+		Query query3 = new Query(Criteria.where("id").is(req.getId()));
+		Update update3 = new Update().set("quantity",newLostToolQuantity);
+		mongoTemplate.updateFirst(query3, update3, DamagedTool.class);
+		
+		int curToolQuantity = Integer.parseInt(tool.getCurquantity());
+		String newCurToolQuantity = Integer.toString(curToolQuantity+numberofToolsFound);
+		
+		Query query = new Query(Criteria.where("name").is(req.getName()));
+		Update update = new Update().set("curquantity",newCurToolQuantity);
+		mongoTemplate.updateFirst(query, update, Tool.class);
+		
+		return req.getName()+"value updated";
+	}
+
+	@Override
+	public String deletePermanentDamagedTool(int id) {
+		Optional<PermanentDamagedTool> damagedTool = permanentDamagedToolRepository.findById(id);
+		int numberOfPermanentDamagedTool = Integer.parseInt(damagedTool.get().getQuantity());
+		
+		Tool tool = toolRepository.findByName(damagedTool.get().getName());
+		
+		int curToolQuantity =Integer.parseInt( tool.getCurquantity());
+		
+		String newCurToolQuantity = Integer.toString(curToolQuantity+numberOfPermanentDamagedTool);
+		
+		Query query = new Query(Criteria.where("name").is(tool.getName()));
+		Update update = new Update().set("curquantity",newCurToolQuantity);
+		mongoTemplate.updateFirst(query, update, Tool.class);
+		
+		
+		permanentDamagedToolRepository.deleteById(id);
+		return "Permanent Damaged Tool Deleted";
 	}
 
 	

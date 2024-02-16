@@ -23,7 +23,9 @@ import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
 import com.inv.inventory.requests.SendToolsRequest;
+import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
+import com.inv.inventory.response.ToolDetailsResponse;
 import com.inv.inventory.service.InventoryService;
 
 
@@ -78,6 +80,12 @@ public class InventoryController {
 	public String deleteTool(@PathVariable int id) {
 		
 		return inventoryService.deleteTool(id);
+	}
+	
+	@DeleteMapping("/deletePermanentDamagedTool/{id}")
+	public String deletePermanentDamagedTool(@PathVariable int id) {
+		
+		return inventoryService.deletePermanentDamagedTool(id);
 	}
 	
 	@PostMapping("/moveToHistory")
@@ -157,4 +165,18 @@ public class InventoryController {
 		return inventoryService.getAllPermanentDamagedTool();
 	}
 	
+	@GetMapping("/toolDetails/{toolName}")
+	public ToolDetailsResponse toolDetails(@PathVariable String toolName) {
+		return inventoryService.toolDetails(toolName);
+	}
+	
+	@PutMapping("/toolFound")
+	public String lostToolFound(@RequestBody ToolFound req) {
+		return inventoryService.lostToolFound(req);                                                                                                    
+	}
+	
+	@PutMapping("/toolRepaired")
+	public String damagedToolRepaired(@RequestBody ToolFound req) {
+		return inventoryService.damagedToolRepaired(req);                                                                                                    
+	}
 }

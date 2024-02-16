@@ -14,7 +14,9 @@ import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
 import com.inv.inventory.requests.SendToolsRequest;
+import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
+import com.inv.inventory.response.ToolDetailsResponse;
 
 public interface InventoryService {
 	//Tool
@@ -22,12 +24,16 @@ public interface InventoryService {
 	public String addTool(Tool tool);
 	public List<Tool> getAllTools();
 	public String deleteTool(int id);
+	public String deletePermanentDamagedTool(int id);
 	public String addLostTool(LostTool tool);
 	public List<LostTool> getAllLostTool();
 	public String addDamagedTool(DamagedTool tool);
 	public List<DamagedTool> getAllDamagedTool();
 	public String addPermanentDamagedTool(PermanentDamagedTool tool);
 	public List<PermanentDamagedTool> getAllPermanentDamagedTool();
+	public ToolDetailsResponse toolDetails(String toolName);
+	public String lostToolFound (ToolFound req);
+	public String damagedToolRepaired (ToolFound req);
 	
 	
 	//Site
