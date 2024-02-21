@@ -29,6 +29,7 @@ import com.inv.inventory.repository.ToolRepository;
 import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
+import com.inv.inventory.requests.SearchToolRequest;
 import com.inv.inventory.requests.SendToolsRequest;
 import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
@@ -728,6 +729,14 @@ public class InventoryServiceImpl implements InventoryService{
 		permanentDamagedToolRepository.deleteById(id);
 		return "Permanent Damaged Tool Deleted";
 	}
+
+	@Override
+	public Tool searchTool(SearchToolRequest req) {
+		Tool tool = toolRepository.findByName(req.getName());
+		return tool;
+	}
+
+
 
 	
 

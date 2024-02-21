@@ -13,6 +13,7 @@ import com.inv.inventory.entity.Tool;
 import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
+import com.inv.inventory.requests.SearchToolRequest;
 import com.inv.inventory.requests.SendToolsRequest;
 import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
@@ -34,6 +35,7 @@ public interface InventoryService {
 	public ToolDetailsResponse toolDetails(String toolName);
 	public String lostToolFound (ToolFound req);
 	public String damagedToolRepaired (ToolFound req);
+	public Tool searchTool(SearchToolRequest req);
 	
 	
 	//Site

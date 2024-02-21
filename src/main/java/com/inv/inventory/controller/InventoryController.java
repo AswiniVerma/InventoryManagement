@@ -22,6 +22,7 @@ import com.inv.inventory.entity.Tool;
 import com.inv.inventory.requests.AddExtraTool;
 import com.inv.inventory.requests.ReceiveToolsRequest;
 import com.inv.inventory.requests.RemoveTool;
+import com.inv.inventory.requests.SearchToolRequest;
 import com.inv.inventory.requests.SendToolsRequest;
 import com.inv.inventory.requests.ToolFound;
 import com.inv.inventory.requests.UpdateSiteRequest;
@@ -178,5 +179,10 @@ public class InventoryController {
 	@PutMapping("/toolRepaired")
 	public String damagedToolRepaired(@RequestBody ToolFound req) {
 		return inventoryService.damagedToolRepaired(req);                                                                                                    
+	}
+	
+	@PostMapping("/searchTool")
+	public Tool searchToolList(@RequestBody SearchToolRequest req) {
+		return inventoryService.searchTool(req);
 	}
 }
