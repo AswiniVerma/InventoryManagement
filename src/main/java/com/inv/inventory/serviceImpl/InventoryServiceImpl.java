@@ -732,7 +732,7 @@ public class InventoryServiceImpl implements InventoryService{
 
 	@Override
 	public Tool searchTool(SearchToolRequest req) {
-		Tool tool = toolRepository.findByName(req.getName());
+		Tool tool = toolRepository.findByName(req.getName().toLowerCase());
 		return tool;
 	}
 
