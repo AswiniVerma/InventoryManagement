@@ -19,6 +19,7 @@ import com.inv.inventory.entity.SentToolDetails;
 import com.inv.inventory.entity.Site;
 import com.inv.inventory.entity.SiteHistory;
 import com.inv.inventory.entity.Tool;
+import com.inv.inventory.exceptions.EmptyListException;
 import com.inv.inventory.repository.DamagedToolRepository;
 import com.inv.inventory.repository.LoginRepository;
 import com.inv.inventory.repository.LostToolRepository;
@@ -37,7 +38,10 @@ import com.inv.inventory.response.ToolDetailsResponse;
 import com.inv.inventory.service.InventoryService;
 import com.inv.inventory.validator.RequestValidator;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class InventoryServiceImpl implements InventoryService{
 	
 	private final ToolRepository toolRepository;
@@ -105,7 +109,9 @@ public class InventoryServiceImpl implements InventoryService{
 	}
 	@Override
 	public List<Tool> getAllTools() {
+		log.info("Entered into get all tools method");
 		List<Tool> toolList = toolRepository.findAll();
+		log.info("Tools response" + toolList.toString());
 		return toolList;
 	}
 	
@@ -272,8 +278,43 @@ public class InventoryServiceImpl implements InventoryService{
 			return "tool is being used in site cannot delete";
 		}
 		else {
+		deleteToolByRepoName(tool.get().getName());
 		toolRepository.deleteById(id);
 		return "tool deleted";
+		}
+	}
+	
+	public void deleteToolByRepoName(String toolName) {
+		List<LostTool> lostToolList = losttoolrepository.findAll();
+		List<DamagedTool> damagedToolList = damagedToolRepository.findAll();
+		List<PermanentDamagedTool> permanentDamagedTool = permanentDamagedToolRepository.findAll();
+		List<Integer> lostToolIdList = new ArrayList<>(); 
+		List<Integer> dmgToolIdList = new ArrayList<>(); 
+		List<Integer> permaDmgToolIdList = new ArrayList<>(); 
+		for(LostTool x : lostToolList) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				lostToolIdList.add(x.getId());
+			}
+		}
+		for(DamagedTool x : damagedToolList) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				dmgToolIdList.add(x.getId());
+			}
+		}
+		for(PermanentDamagedTool x : permanentDamagedTool) {
+			if(x.getName().equalsIgnoreCase(toolName)) {
+				permaDmgToolIdList.add(x.getId());
+			}
+		}
+		
+		for(Integer x : lostToolIdList) {
+			losttoolrepository.deleteById(x);
+		}
+		for(Integer x : dmgToolIdList) {
+			damagedToolRepository.deleteById(x);
+		}
+		for(Integer x : permaDmgToolIdList) {
+			permanentDamagedToolRepository.deleteById(x);
 		}
 	}
 
